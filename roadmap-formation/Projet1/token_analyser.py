@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path 
+import tiktoken 
 
 
 def count_chars(text):
@@ -10,6 +11,13 @@ def count_chars(text):
 def count_words(text):
 
     return len(text.split())
+
+
+def count_token(text, tokenizer_name):
+
+    encode = tiktoken.get_encoding(tokenizer_name)
+    return len(encode.encode(text))
+
 
 
 def main():
@@ -24,6 +32,15 @@ def main():
     group.add_argument("--text", help="help pour le texte")
     group.add_argument("--file", help="help pour le file")
 
+    # Ajout pour token:
+
+    parser.add_argument(
+        "--tokenizer",
+        default="cl100k_base",
+        choices=["cl100k_base", "o200k_base"],
+        help="Tokenizer à utiliser"
+    )
+
     # On parse (on check le contenue de argument)
     args = parser.parse_args()
 
@@ -36,6 +53,7 @@ def main():
 
     print("Nombre de caractéres:", count_chars(contenu))
     print("Mots:", count_words(contenu))
+    print(f"Token({args.tokenizer}):", count_token(contenu, args.tokenizer))
 
 
 if __name__ == "__main__":
